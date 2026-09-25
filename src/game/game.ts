@@ -157,12 +157,17 @@ export class Game {
 
     const interval = input.soft ? Math.min(SOFT_INTERVAL, dropInterval(this.level) / 8) : dropInterval(this.level);
     this.dropAcc += dt * 1000;
+    let softMoved = false;
     while (this.dropAcc >= interval && this.active) {
       this.dropAcc -= interval;
       const moved = this.tryDown();
-      if (moved && input.soft) this.addScore(SOFT_DROP_SCORE);
+      if (moved && input.soft) {
+        this.addScore(SOFT_DROP_SCORE);
+        softMoved = true;
+      }
       if (!moved) break;
     }
+    if (softMoved) this.events.push({ type: "soft" });
 
     this.updateLock(dt, input.soft);
   }

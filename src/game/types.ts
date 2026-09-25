@@ -58,6 +58,7 @@ export type GameEvent =
   | { type: "rotate" }
   | { type: "hold" }
   | { type: "lock"; cells: CellPos[] }
+  | { type: "soft" }
   | { type: "hard-drop"; distance: number; cells: CellPos[] }
   | {
       type: "clear";
