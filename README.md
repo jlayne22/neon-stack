@@ -2,6 +2,8 @@
 
 A neon glass falling-block puzzle. Stack seven shapes, clear horizontal lines, and chase a local high score. Original game — no third-party falling-block branding.
 
+Play in the browser: https://jlayne22.github.io/neon-stack/
+
 ## Run
 
 ```bash
@@ -9,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open the URL Vite prints (default `http://localhost:5173`).
+Open the URL Vite prints (default `http://localhost:5173/neon-stack/`).
 
 Production build:
 
