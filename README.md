@@ -2,6 +2,17 @@
 
 A neon glass falling-block puzzle. Stack seven shapes, clear horizontal lines, and chase a local high score. Original game — no third-party falling-block branding.
 
+## Double-click
+
+`NeonStack.html` at the repo root is a self-contained build. Download that one file and open it in a browser (double-click, or `file://`). No install and no dev server.
+
+Rebuild it after source changes:
+
+```bash
+npm install
+npm run pack
+```
+
 ## Run
 
 ```bash

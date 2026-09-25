@@ -32,9 +32,13 @@ const CLEAR_TIME = 0.46;
 const SOFT_INTERVAL = 0.045;
 
 function readHigh(): number {
-  const raw = localStorage.getItem(HIGH_KEY);
-  const value = raw ? Number(raw) : 0;
-  return Number.isFinite(value) ? value : 0;
+  try {
+    const raw = localStorage.getItem(HIGH_KEY);
+    const value = raw ? Number(raw) : 0;
+    return Number.isFinite(value) ? value : 0;
+  } catch {
+    return 0;
+  }
 }
 
 export class Game {
@@ -458,7 +462,11 @@ export class Game {
   private commitHigh() {
     if (this.score > this.highScore) {
       this.highScore = this.score;
-      localStorage.setItem(HIGH_KEY, String(this.highScore));
+      try {
+        localStorage.setItem(HIGH_KEY, String(this.highScore));
+      } catch {
+        // High score stays in memory when storage is blocked (common on file://).
+      }
     }
   }
 }

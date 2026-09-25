@@ -2,18 +2,34 @@ import type { GameEvent } from "./types";
 
 const STORAGE_KEY = "neon-stack-muted";
 
+function readFlag(key: string): boolean {
+  try {
+    return localStorage.getItem(key) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeFlag(key: string, value: boolean) {
+  try {
+    localStorage.setItem(key, value ? "1" : "0");
+  } catch {
+    // file:// and locked-down browsers may refuse storage; sound still toggles in memory.
+  }
+}
+
 export class AudioEngine {
   private ctx: AudioContext | null = null;
   private master: GainNode | null = null;
   muted: boolean;
 
   constructor() {
-    this.muted = localStorage.getItem(STORAGE_KEY) === "1";
+    this.muted = readFlag(STORAGE_KEY);
   }
 
   toggle() {
     this.muted = !this.muted;
-    localStorage.setItem(STORAGE_KEY, this.muted ? "1" : "0");
+    writeFlag(STORAGE_KEY, this.muted);
     if (this.master) this.master.gain.value = this.muted ? 0 : 0.32;
   }
 
