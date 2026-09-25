@@ -1,0 +1,203 @@
+:root {
+  color-scheme: dark;
+  --cyan: #7ef6ff;
+  --magenta: #ff7ad9;
+  --ink: #f4fbff;
+  font-family: Rajdhani, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #070114;
+  overflow: hidden;
+  touch-action: none;
+}
+
+#view {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+.touch {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+  padding: 10px 10px calc(12px + env(safe-area-inset-bottom));
+}
+
+.touch button {
+  appearance: none;
+  border: 1px solid rgba(150, 236, 255, 0.4);
+  background: rgba(8, 14, 32, 0.72);
+  color: var(--ink);
+  font: 700 18px Orbitron, sans-serif;
+  border-radius: 14px;
+  min-height: 54px;
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 18px rgba(80, 220, 255, 0.08), 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.touch button:active {
+  background: rgba(40, 120, 160, 0.55);
+  transform: translateY(1px);
+}
+
+.modal-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: radial-gradient(circle at 50% 40%, rgba(8, 4, 20, 0.2), rgba(4, 2, 12, 0.55));
+  transition: opacity 0.25s ease;
+}
+
+.modal-wrap[hidden] { display: none; }
+
+.modal {
+  width: min(520px, 100%);
+  padding: 28px 28px 22px;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(18, 16, 40, 0.78), rgba(6, 8, 20, 0.82));
+  border: 1px solid rgba(150, 236, 255, 0.38);
+  box-shadow:
+    0 0 40px rgba(80, 220, 255, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(18px);
+  animation: rise 0.45s ease;
+}
+
+@keyframes rise {
+  from { transform: translateY(16px) scale(0.98); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  font-size: 12px;
+}
+
+h1 {
+  margin: 0;
+  font-family: Orbitron, sans-serif;
+  font-weight: 800;
+  font-size: clamp(46px, 8vw, 72px);
+  line-height: 0.9;
+  background: linear-gradient(100deg, #9cf6ff, #fff, #ff8ae2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 16px rgba(80, 230, 255, 0.45));
+}
+
+.tag {
+  margin: 12px 0 18px;
+  color: rgba(226, 244, 255, 0.82);
+  font-size: 20px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.stat-row div {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.stat-row span {
+  display: block;
+  color: rgba(180, 220, 235, 0.7);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.stat-row strong {
+  font-family: Rajdhani, sans-serif;
+  font-size: 28px;
+  color: white;
+}
+
+.actions { display: flex; gap: 10px; }
+
+.btn {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font: 700 16px Orbitron, sans-serif;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.btn.primary {
+  color: #041018;
+  background: linear-gradient(90deg, #7ef6ff, #d6b0ff 55%, #ff8ae2);
+  box-shadow: 0 0 24px rgba(120, 230, 255, 0.45);
+}
+
+.btn.ghost {
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid rgba(160, 230, 255, 0.4);
+}
+
+.keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 18px 0 8px;
+  padding: 0;
+  list-style: none;
+  color: rgba(214, 236, 248, 0.78);
+  font-size: 15px;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.2em;
+  margin-right: 4px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(170, 230, 255, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+  font-family: inherit;
+}
+
+.mute {
+  appearance: none;
+  margin-top: 6px;
+  border: 0;
+  background: transparent;
+  color: rgba(190, 230, 255, 0.75);
+  font: 600 14px Rajdhani, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .keys { display: none; }
+  .modal { padding: 22px 18px 16px; }
+  .touch { grid-template-columns: repeat(4, 1fr); }
+}

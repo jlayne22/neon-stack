@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#070114" />
+    <title>Neon Stack</title>
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <canvas id="view" aria-label="Neon Stack"></canvas>
+    <div id="touch" class="touch" hidden>
+      <button type="button" data-code="ArrowLeft" aria-label="Move left">◀</button>
+      <button type="button" data-code="ArrowRight" aria-label="Move right">▶</button>
+      <button type="button" data-code="KeyZ" aria-label="Rotate counter-clockwise">↺</button>
+      <button type="button" data-code="ArrowUp" aria-label="Rotate">↻</button>
+      <button type="button" data-code="ArrowDown" aria-label="Soft drop">▼</button>
+      <button type="button" data-code="Space" aria-label="Hard drop">⤓</button>
+      <button type="button" data-code="KeyC" aria-label="Hold">H</button>
+      <button type="button" data-code="Escape" aria-label="Pause">II</button>
+    </div>
+    <div id="modal" class="modal-wrap">
+      <div class="modal">
+        <p class="eyebrow">cyber glass protocol</p>
+        <h1 id="heading">NEON<br />STACK</h1>
+        <p id="tag" class="tag">Stack the light. Clear the grid.</p>
+        <div class="stat-row">
+          <div><span id="stat-a-label">Best</span><strong id="stat-a">0</strong></div>
+          <div><span id="stat-b-label">Level</span><strong id="stat-b">1</strong></div>
+          <div><span id="stat-c-label">Lines</span><strong id="stat-c">0</strong></div>
+        </div>
+        <div class="actions">
+          <button id="primary" class="btn primary" type="button">Start run</button>
+          <button id="secondary" class="btn ghost" type="button" hidden>Restart</button>
+        </div>
+        <ul class="keys">
+          <li><kbd>←</kbd><kbd>→</kbd> move</li>
+          <li><kbd>↑</kbd> rotate</li>
+          <li><kbd>Z</kbd> spin back</li>
+          <li><kbd>↓</kbd> soft drop</li>
+          <li><kbd>Space</kbd> hard drop</li>
+          <li><kbd>C</kbd> hold</li>
+          <li><kbd>Esc</kbd> pause</li>
+          <li><kbd>M</kbd> mute</li>
+        </ul>
+        <button id="mute" class="mute" type="button">Sound on</button>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
