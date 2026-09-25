@@ -29,7 +29,9 @@ export class Renderer {
   private flashes = new Map<string, FlashCell>();
   private time = 0;
   private shake = 0;
+  private quad = 0;
   private flash = 0;
+  private blooms: Array<{ x: number; y: number; w: number; h: number; life: number; max: number; color: string }> = [];
   private pulse = 0;
   private visX = 0;
   private visY = 0;
@@ -75,7 +77,12 @@ export class Renderer {
     this.time += dt;
     this.consume(snapshot, events, dt);
     this.shake = Math.max(0, this.shake - dt * 1.6);
+    this.quad = Math.max(0, this.quad - dt);
     this.flash = Math.max(0, this.flash - dt * 1.8);
+    for (let i = this.blooms.length - 1; i >= 0; i--) {
+      this.blooms[i].life -= dt;
+      if (this.blooms[i].life <= 0) this.blooms.splice(i, 1);
+    }
     this.pulse = Math.max(0, this.pulse - dt * 0.8);
     stepParticles(this.particles, dt);
     const k = 1 - Math.exp(-8 * dt);
@@ -93,7 +100,7 @@ export class Renderer {
     this.drawNext(ctx, snapshot);
     this.drawStats(ctx, snapshot);
 
-    const mag = this.shake * this.shake * (this.reduced ? 2 : 8);
+    const mag = this.shake * this.shake * (this.reduced ? 2 : this.quad > 0 ? 26 : 8);
     const sx = (Math.random() - 0.5) * mag;
     const sy = (Math.random() - 0.5) * mag;
     this.drawBoard(snapshot, dt);
@@ -105,6 +112,7 @@ export class Renderer {
     ctx.translate(sx, sy);
     drawParticles(ctx, this.particles);
     ctx.restore();
+    this.drawBlooms(ctx);
     this.drawFloaters(ctx, dt);
     if (this.flash > 0) {
       ctx.fillStyle = `rgba(255,255,255,${this.flash * 0.22})`;
@@ -125,13 +133,24 @@ export class Renderer {
       if (event.type === "lock" || event.type === "hard-drop") {
         for (const c of event.cells) {
           if (c.y < 0) continue;
-          this.flashes.set(`${c.x},${c.y}`, { t: 0.18 });
+          this.flashes.set(`${c.x},${c.y}`, { t: 0.28 });
           const p = centerOf(c.x, c.y + 0.45);
           dust(this.particles, p.x, board.y + (c.y + 1) * cell, COLORS[c.id]);
         }
         this.shake = Math.min(1, this.shake + (event.type === "hard-drop" ? 0.28 : 0.12));
       }
-      if (event.type === "hard-drop") this.visY = snapshot.active?.y ?? this.visY;
+      if (event.type === "hard-drop") {
+          this.visY = (snapshot.active?.y ?? event.cells[0]?.y ?? this.visY);
+          if (event.distance > 1) {
+            for (const c of event.cells) {
+              const steps = Math.min(event.distance, 12);
+              for (let i = 1; i < steps; i++) {
+                const p = centerOf(c.x, c.y - (event.distance * i) / steps);
+                burst(this.particles, p.x, p.y, COLORS[c.id], 2, 40);
+              }
+            }
+          }
+        }
       if (event.type === "clear") {
         if (event.perfect) {
           this.floaters.push({
@@ -163,8 +182,25 @@ export class Renderer {
           color: event.lines >= 4 ? "#fff1a8" : "#d9fbff",
           size: cell * (event.lines >= 4 ? 1.35 : 1.05),
         });
-        this.shake = Math.min(1, this.shake + 0.18 * event.lines);
-        this.flash = Math.min(1, 0.25 + event.lines * 0.18);
+        const bandTop = Math.min(...event.rows);
+        const bandBot = Math.max(...event.rows);
+        this.blooms.push({
+          x: board.x - 8,
+          y: board.y + bandTop * cell,
+          w: board.w + 16,
+          h: (bandBot - bandTop + 1) * cell,
+          life: event.lines >= 4 ? 0.55 : 0.32,
+          max: event.lines >= 4 ? 0.55 : 0.32,
+          color: event.lines >= 4 ? "#fff6c2" : "#9cf6ff",
+        });
+        if (event.lines >= 4) {
+          this.shake = 1;
+          this.quad = 0.42;
+          this.flash = 1;
+        } else {
+          this.shake = Math.min(1, this.shake + 0.16 * event.lines);
+          this.flash = Math.min(1, 0.25 + event.lines * 0.18);
+        }
         this.pulse = 1;
       }
       if (event.type === "level") {
@@ -432,7 +468,7 @@ export class Renderer {
           drawMino(ctx, px, py, cell * scale, color, 1 - progress * 0.2);
           if (flash && flash.t > 0) {
             ctx.save();
-            ctx.globalAlpha = flash.t / 0.18;
+            ctx.globalAlpha = flash.t / 0.28;
             drawMino(ctx, px, py, cell * scale, "#ffffff", 0.8);
             ctx.restore();
           }
@@ -495,6 +531,26 @@ export class Renderer {
     rounded(ctx, 0, 0, board.w, board.h, 10);
     ctx.clip();
     ctx.drawImage(this.boardLayer, 0, 0, board.w, board.h);
+    ctx.restore();
+  }
+
+  private drawBlooms(ctx: CanvasRenderingContext2D) {
+    if (this.blooms.length === 0) return;
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    for (const bloom of this.blooms) {
+      const t = Math.max(0, bloom.life / bloom.max);
+      const grad = ctx.createLinearGradient(bloom.x, bloom.y, bloom.x, bloom.y + bloom.h);
+      grad.addColorStop(0, "rgba(255,255,255,0)");
+      grad.addColorStop(0.5, bloom.color);
+      grad.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.globalAlpha = t * 0.85;
+      ctx.fillStyle = grad;
+      ctx.fillRect(bloom.x, bloom.y - bloom.h * 0.35, bloom.w, bloom.h * 1.7);
+      ctx.shadowColor = bloom.color;
+      ctx.shadowBlur = 28;
+      ctx.fillRect(bloom.x, bloom.y, bloom.w, Math.max(2, bloom.h * t));
+    }
     ctx.restore();
   }
 

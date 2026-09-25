@@ -44,6 +44,60 @@ window.addEventListener("resize", resize);
 coarse.addEventListener("change", resize);
 resize();
 
+let gestureId = -1;
+let gestureX = 0;
+let gestureY = 0;
+let gestureLastX = 0;
+let gestureDragged = false;
+const SWIPE_STEP = 28;
+
+canvas.addEventListener("pointerdown", (event) => {
+  if (game.phase !== "playing") return;
+  if (event.pointerType === "mouse") return;
+  gestureId = event.pointerId;
+  gestureX = gestureLastX = event.clientX;
+  gestureY = event.clientY;
+  gestureDragged = false;
+  audio.unlock();
+});
+
+canvas.addEventListener("pointermove", (event) => {
+  if (event.pointerId !== gestureId) return;
+  const travelX = event.clientX - gestureX;
+  const travelY = event.clientY - gestureY;
+  if (Math.abs(travelX) > 16 || Math.abs(travelY) > 16) gestureDragged = true;
+  if (Math.abs(travelX) > Math.abs(travelY)) {
+    while (event.clientX - gestureLastX >= SWIPE_STEP) {
+      input.gesture("right");
+      gestureLastX += SWIPE_STEP;
+    }
+    while (gestureLastX - event.clientX >= SWIPE_STEP) {
+      input.gesture("left");
+      gestureLastX -= SWIPE_STEP;
+    }
+  } else if (travelY > 36) {
+    input.pressVirtual("ArrowDown");
+  }
+});
+
+function endGesture(event: PointerEvent) {
+  if (event.pointerId !== gestureId) return;
+  const dx = event.clientX - gestureX;
+  const dy = event.clientY - gestureY;
+  input.releaseVirtual("ArrowDown");
+  if (!gestureDragged) input.gesture("rot");
+  else if (dy > 72 && dy > Math.abs(dx) * 1.15) input.gesture("hard");
+  else if (dy < -56 && Math.abs(dy) > Math.abs(dx)) input.gesture("hold");
+  gestureId = -1;
+}
+
+canvas.addEventListener("pointerup", endGesture);
+canvas.addEventListener("pointercancel", (event) => {
+  if (event.pointerId !== gestureId) return;
+  input.releaseVirtual("ArrowDown");
+  gestureId = -1;
+});
+
 touch.querySelectorAll<HTMLButtonElement>("button[data-code]").forEach((button) => {
   const code = button.dataset.code ?? "";
   const down = (event: PointerEvent) => {

@@ -38,7 +38,7 @@ npm run verify
 | Restart | `R` while paused or after the run ends | — |
 | Mute | `M` | Sound toggle on the menu |
 
-On-screen buttons appear for touch devices and narrow windows.
+On-screen buttons appear for touch devices and narrow windows. On a touch screen you can also tap the well to rotate, swipe sideways to move, swipe down to drop, and swipe up to hold.
 
 ## Play
 
