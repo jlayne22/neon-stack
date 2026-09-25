@@ -35,6 +35,10 @@ export class AudioEngine {
         case "hold":
           this.slide(480, 720, 0.09, "sine", 0.12);
           break;
+        case "soft":
+          this.noise(0.045, 220, 0.1);
+          this.blip(120, 0.05, "sine", 0.1);
+          break;
         case "lock":
           this.noise(0.07, 900, 0.18);
           this.blip(150, 0.08, "sine", 0.16);
